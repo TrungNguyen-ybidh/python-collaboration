@@ -1,0 +1,15 @@
+
+Project Name: Nasdaq Insights
+Project Description
+Nasdaq Insights is a predictive analytics tool designed to assist individual investors in navigating the complexities of the Nasdaq stock market. Utilizing machine learning techniques, this tool analyzes historical stock price data to identify trends, make short-term price predictions, and provide visual comparative analysis of major companies in the market.
+
+Features
+Trend Analysis: Identifies patterns and trends in historical stock price data.
+Price Prediction: Utilizes linear regression to predict short-term stock price movements.
+Comparative Visualization: Generates visual representations for easier comparison of stock performance among leading companies.
+
+Installation
+Prerequisites
+Python 3.6 or higher
+Git (for version control)
+
