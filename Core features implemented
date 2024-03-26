@@ -1,1 +1,19 @@
 # This is the core feature of the project
+#Using pandas for the easier approach
+import pandas as pd
+
+def read_stock_data(file_path):
+    data = pd.read_csv(file_path, parse_dates=True, index_col='Date')
+    return data
+
+# Example usage
+aapl_data = read_stock_data('AAPL_stock_data.csv')
+
+#Calculating Moving Average
+def calculate_moving_average(data, window_size):
+    return data['Close'].rolling(window=window_size).mean()
+
+# Example usage
+aapl_moving_avg = calculate_moving_average(aapl_data, 30)  # 30-day moving average
+
+#Simple Linear Regression
