@@ -1,19 +1,88 @@
 # This is the core feature of the project
 #Using pandas for the easier approach
 import pandas as pd
+import matplotlib.pyplot as plt
 
+# Function to read stock data
 def read_stock_data(file_path):
     data = pd.read_csv(file_path, parse_dates=True, index_col='Date')
     return data
 
-# Example usage
-aapl_data = read_stock_data('AAPL_stock_data.csv')
-
-#Calculating Moving Average
+# Function to calculate moving average
 def calculate_moving_average(data, window_size):
     return data['Close'].rolling(window=window_size).mean()
 
-# Example usage
-aapl_moving_avg = calculate_moving_average(aapl_data, 30)  # 30-day moving average
+# Manual Linear Regression Class
+class ManualLinearRegression:
+    def __init__(self):
+        self.intercept = None
+        self.slope = None
 
-#Simple Linear Regression
+    def fit(self, x, y):
+        x_mean, y_mean = self.mean(x), self.mean(y)
+        self.slope = self.covariance(x, x_mean, y, y_mean) / self.variance(x, x_mean)
+        self.intercept = y_mean - self.slope * x_mean
+
+    def predict(self, x):
+        return [self.intercept + self.slope * xi for xi in x]
+
+    def mean(self, values):
+        return sum(values) / float(len(values))
+
+    def variance(self, values, mean):
+        return sum([(x - mean)**2 for x in values])
+
+    def covariance(self, x, mean_x, y, mean_y):
+        covar = 0.0
+        for i in range(len(x)):
+            covar += (x[i] - mean_x) * (y[i] - mean_y)
+        return covar
+
+# Function to plot predictions
+def plot_predictions(dates, actual, predicted):
+    plt.figure(figsize=(10, 6))
+    plt.scatter(dates, actual, color='red', label='Actual Price')
+    plt.plot(dates, predicted, color='blue', label='Predicted Price')
+    plt.title('Stock Price Prediction')
+    plt.xlabel('Date')
+    plt.ylabel('Stock Price')
+    plt.legend()
+    plt.show()
+
+# Manual function to split the dataset
+def train_test_split(dataset, split_ratio):
+    train_size = int(len(dataset) * split_ratio)
+    train = dataset[:train_size]
+    test = dataset[train_size:]
+    return train, test
+
+# Example workflow
+if __name__ == "__main__":
+    # Read stock data
+    aapl_data = read_stock_data('AAPL_stock_data.csv')
+    
+    # Calculate 30-day moving average
+    aapl_moving_avg = calculate_moving_average(aapl_data, 30)
+
+    # Prepare data for linear regression
+    aapl_data['Date_ordinal'] = aapl_data.index.map(pd.Timestamp.toordinal)
+    X = aapl_data['Date_ordinal'].values
+    y = aapl_data['Close'].values
+    
+    # Split the data
+    train, test = train_test_split(list(zip(X, y)), 0.8)
+    train_X, train_y = zip(*train)
+    test_X, test_y = zip(*test)
+
+    # Fit the model
+    model = ManualLinearRegression()
+    model.fit(train_X, train_y)
+
+    # Predict
+    predictions = model.predict(test_X)
+
+    # Convert ordinal dates back to datetime for plotting
+    test_dates = [pd.Timestamp.fromordinal(int(date)) for date in test_X]
+
+    # Plot
+    plot_predictions(test_dates, test_y, predictions)
